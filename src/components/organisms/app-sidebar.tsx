@@ -64,7 +64,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-0.5">
+            <SidebarMenu>
               {navLinks.map((item) => (
                 <Collapsible
                   key={item.label}
@@ -72,14 +72,14 @@ export function AppSidebar() {
                   className="group/collapsible"
                 >
                   <SidebarMenuItem>
-                    <CollapsibleTrigger asChild className="h-12">
-                      <SidebarMenuButton className="flex items-center">
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton className="flex items-center ">
                         {item.label}
                         <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                      <SidebarMenuSub className="py-1 space-y-4">
+                      <SidebarMenuSub className="py-1 space-y-3">
                         {item.links.map((i) => (
                           <SidebarMenuSubItem key={i.label}>
                             <Link

@@ -8,32 +8,15 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
-import { Route as authenticatedLayoutImport } from './routes/(authenticated)/_layout'
-import { Route as authenticatedLayoutProfileImport } from './routes/(authenticated)/_layout/profile'
-
-// Create Virtual Routes
-
-const authenticatedImport = createFileRoute('/(authenticated)')()
+import { Route as AuthenticatedLayoutImport } from './routes/_authenticated/_layout'
+import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as AuthenticatedLayoutProfileImport } from './routes/_authenticated/_layout/profile'
 
 // Create/Update Routes
-
-const authenticatedRoute = authenticatedImport.update({
-  id: '/(authenticated)',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -41,16 +24,22 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const authenticatedLayoutRoute = authenticatedLayoutImport.update({
-  id: '/_layout',
-  getParentRoute: () => authenticatedRoute,
+const AuthenticatedLayoutRoute = AuthenticatedLayoutImport.update({
+  id: '/_authenticated/_layout',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const authenticatedLayoutProfileRoute = authenticatedLayoutProfileImport.update(
+const authLoginRoute = authLoginImport.update({
+  id: '/(auth)/login',
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedLayoutProfileRoute = AuthenticatedLayoutProfileImport.update(
   {
     id: '/profile',
     path: '/profile',
-    getParentRoute: () => authenticatedLayoutRoute,
+    getParentRoute: () => AuthenticatedLayoutRoute,
   } as any,
 )
 
@@ -65,108 +54,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      id: '/login'
+    '/(auth)/login': {
+      id: '/(auth)/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
+      preLoaderRoute: typeof authLoginImport
       parentRoute: typeof rootRoute
     }
-    '/(authenticated)': {
-      id: '/(authenticated)'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof authenticatedImport
+    '/_authenticated/_layout': {
+      id: '/_authenticated/_layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedLayoutImport
       parentRoute: typeof rootRoute
     }
-    '/(authenticated)/_layout': {
-      id: '/(authenticated)/_layout'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof authenticatedLayoutImport
-      parentRoute: typeof authenticatedRoute
-    }
-    '/(authenticated)/_layout/profile': {
-      id: '/(authenticated)/_layout/profile'
+    '/_authenticated/_layout/profile': {
+      id: '/_authenticated/_layout/profile'
       path: '/profile'
       fullPath: '/profile'
-      preLoaderRoute: typeof authenticatedLayoutProfileImport
-      parentRoute: typeof authenticatedLayoutImport
+      preLoaderRoute: typeof AuthenticatedLayoutProfileImport
+      parentRoute: typeof AuthenticatedLayoutImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface authenticatedLayoutRouteChildren {
-  authenticatedLayoutProfileRoute: typeof authenticatedLayoutProfileRoute
+interface AuthenticatedLayoutRouteChildren {
+  AuthenticatedLayoutProfileRoute: typeof AuthenticatedLayoutProfileRoute
 }
 
-const authenticatedLayoutRouteChildren: authenticatedLayoutRouteChildren = {
-  authenticatedLayoutProfileRoute: authenticatedLayoutProfileRoute,
+const AuthenticatedLayoutRouteChildren: AuthenticatedLayoutRouteChildren = {
+  AuthenticatedLayoutProfileRoute: AuthenticatedLayoutProfileRoute,
 }
 
-const authenticatedLayoutRouteWithChildren =
-  authenticatedLayoutRoute._addFileChildren(authenticatedLayoutRouteChildren)
-
-interface authenticatedRouteChildren {
-  authenticatedLayoutRoute: typeof authenticatedLayoutRouteWithChildren
-}
-
-const authenticatedRouteChildren: authenticatedRouteChildren = {
-  authenticatedLayoutRoute: authenticatedLayoutRouteWithChildren,
-}
-
-const authenticatedRouteWithChildren = authenticatedRoute._addFileChildren(
-  authenticatedRouteChildren,
-)
+const AuthenticatedLayoutRouteWithChildren =
+  AuthenticatedLayoutRoute._addFileChildren(AuthenticatedLayoutRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '/': typeof authenticatedLayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/profile': typeof authenticatedLayoutProfileRoute
+  '/': typeof IndexRoute
+  '/login': typeof authLoginRoute
+  '': typeof AuthenticatedLayoutRouteWithChildren
+  '/profile': typeof AuthenticatedLayoutProfileRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof authenticatedLayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/profile': typeof authenticatedLayoutProfileRoute
+  '/': typeof IndexRoute
+  '/login': typeof authLoginRoute
+  '': typeof AuthenticatedLayoutRouteWithChildren
+  '/profile': typeof AuthenticatedLayoutProfileRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/(authenticated)': typeof authenticatedRouteWithChildren
-  '/(authenticated)/_layout': typeof authenticatedLayoutRouteWithChildren
-  '/(authenticated)/_layout/profile': typeof authenticatedLayoutProfileRoute
+  '/(auth)/login': typeof authLoginRoute
+  '/_authenticated/_layout': typeof AuthenticatedLayoutRouteWithChildren
+  '/_authenticated/_layout/profile': typeof AuthenticatedLayoutProfileRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/profile'
+  fullPaths: '/' | '/login' | '' | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/profile'
+  to: '/' | '/login' | '' | '/profile'
   id:
     | '__root__'
     | '/'
-    | '/login'
-    | '/(authenticated)'
-    | '/(authenticated)/_layout'
-    | '/(authenticated)/_layout/profile'
+    | '/(auth)/login'
+    | '/_authenticated/_layout'
+    | '/_authenticated/_layout/profile'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LoginRoute: typeof LoginRoute
-  authenticatedRoute: typeof authenticatedRouteWithChildren
+  authLoginRoute: typeof authLoginRoute
+  AuthenticatedLayoutRoute: typeof AuthenticatedLayoutRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
-  authenticatedRoute: authenticatedRouteWithChildren,
+  authLoginRoute: authLoginRoute,
+  AuthenticatedLayoutRoute: AuthenticatedLayoutRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -180,32 +150,25 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/login",
-        "/(authenticated)"
+        "/(auth)/login",
+        "/_authenticated/_layout"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/login": {
-      "filePath": "login.tsx"
+    "/(auth)/login": {
+      "filePath": "(auth)/login.tsx"
     },
-    "/(authenticated)": {
-      "filePath": "(authenticated)",
+    "/_authenticated/_layout": {
+      "filePath": "_authenticated/_layout.tsx",
       "children": [
-        "/(authenticated)/_layout"
+        "/_authenticated/_layout/profile"
       ]
     },
-    "/(authenticated)/_layout": {
-      "filePath": "(authenticated)/_layout.tsx",
-      "parent": "/(authenticated)",
-      "children": [
-        "/(authenticated)/_layout/profile"
-      ]
-    },
-    "/(authenticated)/_layout/profile": {
-      "filePath": "(authenticated)/_layout/profile.tsx",
-      "parent": "/(authenticated)/_layout"
+    "/_authenticated/_layout/profile": {
+      "filePath": "_authenticated/_layout/profile.tsx",
+      "parent": "/_authenticated/_layout"
     }
   }
 }
