@@ -48,7 +48,12 @@ export function AppSidebar() {
                   <ChevronDown className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+              <DropdownMenuContent
+                className="w-[--radix-popper-anchor-width] shadow-xs"
+                side="right"
+                sideOffset={15}
+                align="start"
+              >
                 <DropdownMenuItem>
                   <span>Acme Inc</span>
                 </DropdownMenuItem>

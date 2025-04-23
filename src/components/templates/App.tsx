@@ -10,7 +10,9 @@ const App = () => {
         <AppSidebar />
         <main className="p-4 w-full">
           <AppHeader />
-          <Outlet />
+          <div className="mt-5">
+            <Outlet />
+          </div>
         </main>
       </SidebarProvider>
     </>

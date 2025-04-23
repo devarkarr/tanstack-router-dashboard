@@ -15,6 +15,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AuthenticatedLayoutImport } from './routes/_authenticated/_layout'
 import { Route as authLoginImport } from './routes/(auth)/login'
 import { Route as AuthenticatedLayoutProfileImport } from './routes/_authenticated/_layout/profile'
+import { Route as AuthenticatedLayoutProductsImport } from './routes/_authenticated/_layout/products'
 
 // Create/Update Routes
 
@@ -43,6 +44,13 @@ const AuthenticatedLayoutProfileRoute = AuthenticatedLayoutProfileImport.update(
   } as any,
 )
 
+const AuthenticatedLayoutProductsRoute =
+  AuthenticatedLayoutProductsImport.update({
+    id: '/products',
+    path: '/products',
+    getParentRoute: () => AuthenticatedLayoutRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -68,6 +76,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLayoutImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/_layout/products': {
+      id: '/_authenticated/_layout/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof AuthenticatedLayoutProductsImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
     '/_authenticated/_layout/profile': {
       id: '/_authenticated/_layout/profile'
       path: '/profile'
@@ -81,10 +96,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthenticatedLayoutRouteChildren {
+  AuthenticatedLayoutProductsRoute: typeof AuthenticatedLayoutProductsRoute
   AuthenticatedLayoutProfileRoute: typeof AuthenticatedLayoutProfileRoute
 }
 
 const AuthenticatedLayoutRouteChildren: AuthenticatedLayoutRouteChildren = {
+  AuthenticatedLayoutProductsRoute: AuthenticatedLayoutProductsRoute,
   AuthenticatedLayoutProfileRoute: AuthenticatedLayoutProfileRoute,
 }
 
@@ -95,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof authLoginRoute
   '': typeof AuthenticatedLayoutRouteWithChildren
+  '/products': typeof AuthenticatedLayoutProductsRoute
   '/profile': typeof AuthenticatedLayoutProfileRoute
 }
 
@@ -102,6 +120,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof authLoginRoute
   '': typeof AuthenticatedLayoutRouteWithChildren
+  '/products': typeof AuthenticatedLayoutProductsRoute
   '/profile': typeof AuthenticatedLayoutProfileRoute
 }
 
@@ -110,19 +129,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(auth)/login': typeof authLoginRoute
   '/_authenticated/_layout': typeof AuthenticatedLayoutRouteWithChildren
+  '/_authenticated/_layout/products': typeof AuthenticatedLayoutProductsRoute
   '/_authenticated/_layout/profile': typeof AuthenticatedLayoutProfileRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '' | '/profile'
+  fullPaths: '/' | '/login' | '' | '/products' | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '' | '/profile'
+  to: '/' | '/login' | '' | '/products' | '/profile'
   id:
     | '__root__'
     | '/'
     | '/(auth)/login'
     | '/_authenticated/_layout'
+    | '/_authenticated/_layout/products'
     | '/_authenticated/_layout/profile'
   fileRoutesById: FileRoutesById
 }
@@ -163,8 +184,13 @@ export const routeTree = rootRoute
     "/_authenticated/_layout": {
       "filePath": "_authenticated/_layout.tsx",
       "children": [
+        "/_authenticated/_layout/products",
         "/_authenticated/_layout/profile"
       ]
+    },
+    "/_authenticated/_layout/products": {
+      "filePath": "_authenticated/_layout/products.tsx",
+      "parent": "/_authenticated/_layout"
     },
     "/_authenticated/_layout/profile": {
       "filePath": "_authenticated/_layout/profile.tsx",
